@@ -66,6 +66,7 @@ setRebalanceCallback f k e pls = do
   case e of
     KafkaResponseError RdKafkaRespErrAssignPartitions -> do
         f k (RebalanceBeforeAssign assignment)
+        print pls
         protocol <- rdKafkaRebalanceProtocol kptr
         if protocol == "COOPERATIVE" 
           then void $ rdKafkaIncrementalAssign kptr pls
@@ -88,6 +89,7 @@ setRebalanceCallback f k e pls = do
     KafkaResponseError RdKafkaRespErrRevokePartitions -> do
         f k (RebalanceBeforeRevoke assignment)
         protocol <- rdKafkaRebalanceProtocol kptr
+        print pls
         if protocol == "COOPERATIVE" 
           then void $ rdKafkaIncrementalUnassign kptr pls
           else void $ newForeignPtr_ nullPtr >>= rdKafkaAssign kptr
